@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[10pt, aspectratio=169]{beamer}
 
 \usetheme[progressbar=frametitle]{metropolis}
 \usepackage{appendixnumberbeamer}
@@ -6,330 +6,181 @@
 \usepackage{booktabs}
 \usepackage[scale=2]{ccicons}
 
-\usepackage{pgfplots}
+% TikZ and plotting tools
+\usepackage{tikz, pgfplots}
+\usepackage{subcaption,multirow}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{positioning}
+
+
+% Define the custom colors
+\colorlet{MyPca}{red!70!black}
+\colorlet{MyMahalanobis}{green!60!black}
+\colorlet{MyCnn}{orange!80!black}
+\colorlet{MyEnsembling}{purple!70!black}
+\colorlet{MyOriginal}{blue!50!black}
+
 \usepgfplotslibrary{dateplot}
 
 \usepackage{xspace}
 \newcommand{\themename}{\textbf{\textsc{metropolis}}\xspace}
 
-\title{Metropolis}
-\subtitle{A modern beamer theme}
-\date{\today}
-\author{Michael Darmanis}
-\author{Stathis Kotsis}
-\institute{Center for modern beamer themes}
 % \titlegraphic{\hfill\includegraphics[height=1.5cm]{logo.pdf}}
+
+\title{Wrangling with ``Unsupervised Space Partitioning for ANN Search''}
+\subtitle{A Study on Performance Enhancements}
+\date{\today}
+% first name will be the one who presents first
+\author{Stathis Kotsis \and Michael Darmanis}
+\institute{M149 Database Systems, NKUA}
+
 
 \begin{document}
 
 \maketitle
 
-\begin{frame}{Table of contents}
-  \setbeamertemplate{section in toc}[sections numbered]
-  \tableofcontents%[hideallsubsections]
+
+\begin{frame}{Introduction}
+    \begin{itemize}
+        \item Approximate Nearest Neighbour (ANN) search is crucial in handling large datasets.
+        \item Traditional methods may not scale well with high-dimensional data.
+        \item This study investigates extensions to the original approach in "Unsupervised Space Partitioning for Approximate Nearest Neighbour Search".
+    \end{itemize}
 \end{frame}
 
-\section[Intro]{Introduction}
-
-\begin{frame}[fragile]{Metropolis}
-
-  The \themename theme is a Beamer theme with minimal visual noise
-  inspired by the \href{https://github.com/hsrmbeamertheme/hsrmbeamertheme}{\textsc{hsrm} Beamer
-  Theme} by Benjamin Weiss.
-
-  Enable the theme by loading
-
-  \begin{verbatim}    \documentclass{beamer}
-    \usetheme{metropolis}\end{verbatim}
-
-  Note, that you have to have Mozilla's \emph{Fira Sans} font and XeTeX
-  installed to enjoy this wonderful typography.
-\end{frame}
-\begin{frame}[fragile]{Sections}
-  Sections group slides of the same topic
-
-  \begin{verbatim}    \section{Elements}\end{verbatim}
-
-  for which \themename provides a nice progress indicator \ldots
-  
+\begin{frame}{Original ANN Scheme}
+	\begin{figure}
+		\includegraphics[width=0.90\textwidth]{plots/overview.png}
+	\end{figure}
 \end{frame}
 
-\section{Titleformats}
+\begin{frame}{Implementations and Integrations}
 
-\begin{frame}{Metropolis titleformats}
-	\themename supports 4 different titleformats:
-	\begin{itemize}
-		\item Regular
-		\item \textsc{Smallcaps}
-		\item \textsc{allsmallcaps}
-		\item ALLCAPS
-	\end{itemize}
-	They can either be set at once for every title type or individually.
+    \begin{block}{Indexing}
+        \begin{itemize}
+            \item Hierarchical Navigable Small Worlds\cite{hnsw} (not fully implemented)
+            \item Product vector quantization pipeline\cite{pquantize} (implemented with slow training time, but significant memory savings)
+        \end{itemize}
+    \end{block}
+    
+    \begin{block}{Sketching}
+        \begin{itemize}
+            \item Principal Component Analysis\cite{pca-origin} (PCA)
+        \end{itemize}
+    \end{block}
+    
+    \begin{block}{Model enrichment}
+        \begin{itemize}
+        	\item Mahalanobis distance\cite{mahalanobis}
+            \item Convolutional Neural Networks\cite{cnn} (CNNs)
+            \item Multi-ensembling paradigm\cite{ensembling}
+            \item Loss function modifications (not fully implemented)
+        \end{itemize}
+    \end{block}
+    
 \end{frame}
 
-\subsection{Tricks}
+\begin{frame}{Results: \textcolor{MyOriginal}{Original}, \textcolor{MyPca}{PCA}}
+ 
+\begin{figure}[h]
+    \centering    
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \input{plots/sift-16a} % Make sure the individual plot does not include a legend
+    \end{subfigure}
+    \hspace{2mm}
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \input{plots/mnist-16a} % Make sure the individual plot does not include a legend
+    \end{subfigure}
+\end{figure}
 
-{
-    \metroset{titleformat frame=smallcaps}
-\begin{frame}{Small caps}
-	This frame uses the \texttt{smallcaps} titleformat.
-
-	\begin{alertblock}{Potential Problems}
-		Be aware, that not every font supports small caps. If for example you typeset your presentation with pdfTeX and the Computer Modern Sans Serif font, every text in smallcaps will be typeset with the Computer Modern Serif font instead.
-	\end{alertblock}
-\end{frame}
-}
-
-{
-\metroset{titleformat frame=allsmallcaps}
-\begin{frame}{All small caps}
-	This frame uses the \texttt{allsmallcaps} titleformat.
-
-	\begin{alertblock}{Potential problems}
-		As this titleformat also uses smallcaps you face the same problems as with the \texttt{smallcaps} titleformat. Additionally this format can cause some other problems. Please refer to the documentation if you consider using it.
-
-		As a rule of thumb: Just use it for plaintext-only titles.
-	\end{alertblock}
-\end{frame}
-}
-
-{
-\metroset{titleformat frame=allcaps}
-\begin{frame}{All caps}
-	This frame uses the \texttt{allcaps} titleformat.
-
-	\begin{alertblock}{Potential Problems}
-		This titleformat is not as problematic as the \texttt{allsmallcaps} format, but basically suffers from the same deficiencies. So please have a look at the documentation if you want to use it.
-	\end{alertblock}
-\end{frame}
-}
-
-\section{Elements}
-
-\begin{frame}[fragile]{Typography}
-      \begin{verbatim}The theme provides sensible defaults to
-\emph{emphasize} text, \alert{accent} parts
-or show \textbf{bold} results.\end{verbatim}
-
-  \begin{center}becomes\end{center}
-
-  The theme provides sensible defaults to \emph{emphasize} text,
-  \alert{accent} parts or show \textbf{bold} results.
+    \begin{itemize}
+        \item Achieved 1\% accuracy increase at candidate sizes of 190,000-195,000 on SIFT.
+    	\item Reduced search time to 0.42 ms on SIFT, a 66\% improvement.
+    	\item Exhibited similar performance to the original on MNIST.
+    	\item Achieved 0.22 ms search time on MNIST, a 70\% reduction.
+    \end{itemize}
+    
 \end{frame}
 
-\begin{frame}{Font feature test}
-  \begin{itemize}
-    \item Regular
-    \item \textit{Italic}
-    \item \textsc{SmallCaps}
-    \item \textbf{Bold}
-    \item \textbf{\textit{Bold Italic}}
-    \item \textbf{\textsc{Bold SmallCaps}}
-    \item \texttt{Monospace}
-    \item \texttt{\textit{Monospace Italic}}
-    \item \texttt{\textbf{Monospace Bold}}
-    \item \texttt{\textbf{\textit{Monospace Bold Italic}}}
-  \end{itemize}
-\end{frame}
+\begin{frame}{Results: \textcolor{MyOriginal}{Original}, \textcolor{MyPca}{PCA}, \textcolor{MyMahalanobis}{Mahalanobis}}
+\begin{figure}[h]
+    \centering    
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \input{plots/sift-16b} % Make sure the individual plot does not include a legend
+    \end{subfigure}
+    \hspace{2mm}
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \input{plots/mnist-16b} % Make sure the individual plot does not include a legend
+    \end{subfigure}
+\end{figure}
 
-\begin{frame}{Lists}
-  \begin{columns}[T,onlytextwidth]
-    \column{0.33\textwidth}
-      Items
-      \begin{itemize}
-        \item Milk \item Eggs \item Potatos
-      \end{itemize}
-
-    \column{0.33\textwidth}
-      Enumerations
-      \begin{enumerate}
-        \item First, \item Second and \item Last.
-      \end{enumerate}
-
-    \column{0.33\textwidth}
-      Descriptions
-      \begin{description}
-        \item[PowerPoint] Meeh. \item[Beamer] Yeeeha.
-      \end{description}
-  \end{columns}
-\end{frame}
-\begin{frame}{Animation}
-  \begin{itemize}[<+- | alert@+>]
-    \item \alert<4>{This is\only<4>{ really} important}
-    \item Now this
-    \item And now this
-  \end{itemize}
-\end{frame}
-\begin{frame}{Figures}
-  \begin{figure}
-    \newcounter{density}
-    \setcounter{density}{20}
-    \begin{tikzpicture}
-      \def\couleur{alerted text.fg}
-      \path[coordinate] (0,0)  coordinate(A)
-                  ++( 90:5cm) coordinate(B)
-                  ++(0:5cm) coordinate(C)
-                  ++(-90:5cm) coordinate(D);
-      \draw[fill=\couleur!\thedensity] (A) -- (B) -- (C) --(D) -- cycle;
-      \foreach \x in {1,...,40}{%
-          \pgfmathsetcounter{density}{\thedensity+20}
-          \setcounter{density}{\thedensity}
-          \path[coordinate] coordinate(X) at (A){};
-          \path[coordinate] (A) -- (B) coordinate[pos=.10](A)
-                              -- (C) coordinate[pos=.10](B)
-                              -- (D) coordinate[pos=.10](C)
-                              -- (X) coordinate[pos=.10](D);
-          \draw[fill=\couleur!\thedensity] (A)--(B)--(C)-- (D) -- cycle;
-      }
-    \end{tikzpicture}
-    \caption{Rotated square from
-    \href{http://www.texample.net/tikz/examples/rotated-polygons/}{texample.net}.}
-  \end{figure}
-\end{frame}
-\begin{frame}{Tables}
-  \begin{table}
-    \caption{Largest cities in the world (source: Wikipedia)}
-    \begin{tabular}{lr}
-      \toprule
-      City & Population\\
-      \midrule
-      Mexico City & 20,116,842\\
-      Shanghai & 19,210,000\\
-      Peking & 15,796,450\\
-      Istanbul & 14,160,467\\
-      \bottomrule
-    \end{tabular}
-  \end{table}
-\end{frame}
-\begin{frame}{Blocks}
-  Three different block environments are pre-defined and may be styled with an
-  optional background color.
-
-  \begin{columns}[T,onlytextwidth]
-    \column{0.5\textwidth}
-      \begin{block}{Default}
-        Block content.
-      \end{block}
-
-      \begin{alertblock}{Alert}
-        Block content.
-      \end{alertblock}
-
-      \begin{exampleblock}{Example}
-        Block content.
-      \end{exampleblock}
-
-    \column{0.5\textwidth}
-
-      \metroset{block=fill}
-
-      \begin{block}{Default}
-        Block content.
-      \end{block}
-
-      \begin{alertblock}{Alert}
-        Block content.
-      \end{alertblock}
-
-      \begin{exampleblock}{Example}
-        Block content.
-      \end{exampleblock}
-
-  \end{columns}
-\end{frame}
-\begin{frame}{Math}
-  \begin{equation*}
-    e = \lim_{n\to \infty} \left(1 + \frac{1}{n}\right)^n
-  \end{equation*}
-\end{frame}
-\begin{frame}{Line plots}
-  \begin{figure}
-    \begin{tikzpicture}
-      \begin{axis}[
-        mlineplot,
-        width=0.9\textwidth,
-        height=6cm,
-      ]
-
-        \addplot {sin(deg(x))};
-        \addplot+[samples=100] {sin(deg(2*x))};
-
-      \end{axis}
-    \end{tikzpicture}
-  \end{figure}
-\end{frame}
-\begin{frame}{Bar charts}
-  \begin{figure}
-    \begin{tikzpicture}
-      \begin{axis}[
-        mbarplot,
-        xlabel={Foo},
-        ylabel={Bar},
-        width=0.9\textwidth,
-        height=6cm,
-      ]
-
-      \addplot plot coordinates {(1, 20) (2, 25) (3, 22.4) (4, 12.4)};
-      \addplot plot coordinates {(1, 18) (2, 24) (3, 23.5) (4, 13.2)};
-      \addplot plot coordinates {(1, 10) (2, 19) (3, 25) (4, 15.2)};
-
-      \legend{lorem, ipsum, dolor}
-
-      \end{axis}
-    \end{tikzpicture}
-  \end{figure}
-\end{frame}
-\begin{frame}{Quotes}
-  \begin{quote}
-    Veni, Vidi, Vici
-  \end{quote}
-\end{frame}
-
-{%
-\setbeamertemplate{frame footer}{My custom footer}
-\begin{frame}[fragile]{Frame footer}
-    \themename defines a custom beamer template to add a text to the footer. It can be set via
-    \begin{verbatim}\setbeamertemplate{frame footer}{My custom footer}\end{verbatim}
-\end{frame}
-}
-
-\begin{frame}{References}
-  Some references to showcase [allowframebreaks] \cite{knuth92,ConcreteMath,Simpson,Er01,greenwade93}
-\end{frame}
-
-\section{Conclusion}
-
-\begin{frame}{Summary}
-
-  Get the source of this theme and the demo presentation from
-
-  \begin{center}\url{github.com/matze/mtheme}\end{center}
-
-  The theme \emph{itself} is licensed under a
-  \href{http://creativecommons.org/licenses/by-sa/4.0/}{Creative Commons
-  Attribution-ShareAlike 4.0 International License}.
-
-  \begin{center}\ccbysa\end{center}
+    \begin{itemize}
+    	\item Matched PCA with 0.42 ms search time on SIFT, a 66\% improvement.
+    	\item Reduced search time to 0.21 ms on MNIST, a 70\% improvement.
+    \end{itemize}
 
 \end{frame}
 
-{\setbeamercolor{palette primary}{fg=black, bg=yellow}
-\begin{frame}[standout]
-  Questions?
+\begin{frame}{Results: \textcolor{MyOriginal}{Original}, \textcolor{MyPca}{PCA}, \textcolor{MyMahalanobis}{Mahalanobis}, \textcolor{MyCnn}{CNN}}
+\begin{figure}[h]
+    \centering    
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \input{plots/sift-16c} % Make sure the individual plot does not include a legend
+    \end{subfigure}
+    \hspace{2mm}
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \input{plots/mnist-16c} % Make sure the individual plot does not include a legend
+    \end{subfigure}
+    
+    \begin{itemize}
+    	\item Achieved high performance on MNIST with only 4-5 epochs, compared to 40+ epochs for linear models.
+    \end{itemize}
+    
+\end{figure}
+
 \end{frame}
-}
 
-\appendix
+\begin{frame}{Results: \textcolor{MyOriginal}{Original}, \textcolor{MyPca}{PCA}, \textcolor{MyMahalanobis}{Mahalanobis}, \textcolor{MyCnn}{CNN}, \textcolor{MyEnsembling}{Multi-Ensembling}}
+\begin{figure}[h]
+    \centering    
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \input{plots/sift-16d} % Make sure the individual plot does not include a legend
+    \end{subfigure}
+    \hspace{2mm}
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \input{plots/mnist-16d} % Make sure the individual plot does not include a legend
+    \end{subfigure}
+    
+    \begin{itemize}
+        \item Exhibited tendency of creating oversized partitions.
+    	\item Demonstrated complexity in integrating different models for high-dimensional data.
+    \end{itemize}
+    
+\end{figure}
 
-\begin{frame}[fragile]{Backup slides}
-  Sometimes, it is useful to add slides at the end of your presentation to
-  refer to during audience questions.
+\end{frame}
 
-  The best way to do this is to include the \verb|appendixnumberbeamer|
-  package in your preamble and call \verb|\appendix| before your backup slides.
 
-  \themename will automatically turn off slide numbering and progress bars for
-  slides in the appendix.
+\begin{frame}{Conclusions}
+
+\begin{block}{\centering \Large}
+    \hspace{1cm}
+    \begin{itemize}
+        \item Achieved notable search time reductions with PCA and Mahalanobis; difficulties presented in handling high number of partitions
+        \item Demonstrated CNNs' efficiency; achieved high performance with minimal epochs (original used 90+ with a neural network)
+        \item Revealed multi-ensembling complexities; smarter functions for the combination of models are required (probabilistic, genetic algorithms)
+        \item Proposed future steps in adaptive techniques, alternative loss functions, and hybrid model and  unsupervised space partitioning (hnsw and product vector quantisation)
+    \end{itemize}
+\end{block}
+
 \end{frame}
 
 \begin{frame}[allowframebreaks]{References}
