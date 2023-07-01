@@ -102,6 +102,7 @@ Default parameter values are set in [utils.py](src/utils.py).
 - `eta_value`: Balance parameter for the loss function.
 - `distance_metric`: Choose distance metric (`euclidean` or `mahalanobis`).
 - `model_combination`: Create an ensemble by combining models in the order provided.
+- `pl`:  Run vector quantisation pipeline (executes after the model ensembling).
 
 #### Storing Options:
 - `load_knn`: Load the k-NN matrix from file (if available).
